@@ -27,9 +27,11 @@ func validation(input string, offset int) error {
 			return errors.New("error input month range format")
 		}
 	case 2:
+		/*
 		if len(input) != 4 {
 			return errors.New("error input year format (yyyy)")
 		}
+		*/
 
 		iYear, err := strconv.Atoi(input)
 		if err != nil {
