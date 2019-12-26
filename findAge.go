@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func validation(input string, offset int) error {
+func Validation(input string, offset int) error {
 	switch offset {
 	case 0:
 		iDate, err := strconv.Atoi(input)
@@ -27,56 +27,88 @@ func validation(input string, offset int) error {
 			return errors.New("error input month range format")
 		}
 	case 2:
-		/*
-		if len(input) != 4 {
-			return errors.New("error input year format (yyyy)")
-		}
-		*/
 
 		iYear, err := strconv.Atoi(input)
+
 		if err != nil {
 			return errors.New("error input convert year format")
 		}
 		if !(iYear > 0) {
 			return errors.New("error input year format")
+
+		}
+		if iYear > time.Now().Year() {
+			return errors.New("error input year is over")
 		}
 	case 3:
-		if !(input == "EN" || input == "TH") {
-			return errors.New("error input option language format")
-		}
+		// if !(input == "EN" || input == "TH" || input == "" ) {
+		// 	return errors.New("error input option language format")
+		// }
 	}
 	return nil
 }
 
 func Find(inputs []string) string {
-	if !(len(inputs) == 4 || len(inputs) == 3) {
+
+	if !(len(inputs) >= 3) {
 		fmt.Println("error input params")
 		return ""
 	}
-	day := strings.Trim(inputs[0], "\n")
-	month := strings.Trim(inputs[1], "\n")
-	year := strings.Trim(inputs[2], "\n")
+	daystring := strings.Trim(inputs[0], "\n")
+	dayint, err := strconv.Atoi(daystring)
+	day := strconv.Itoa(dayint)
+	if err == nil {
+		//fmt.Println(dayint)
+	}
+
+	if len(day) < 2 {
+		day = "0" + day
+	}
+
+	monthstring := strings.Trim(inputs[1], "\n")
+	monthint, err := strconv.Atoi(monthstring)
+	month := strconv.Itoa(monthint)
+
+	if len(month) < 2 {
+		month = "0" + month
+	}
+
+	yearstring := strings.Trim(inputs[2], "\n")
+	yearint, err := strconv.Atoi(yearstring)
+	year := strconv.Itoa(yearint)
+	if len(year) < 2 {
+		year = "000" + year
+	}
+
+	if len(year) < 3 {
+		year = "00" + year
+	}
+
+	if len(year) < 4 {
+		year = "0" + year
+	}
+
 	var language string = "EN"
 
 	// CHECK ERROR AND PRINT
 	var errTmp error = nil
-	if err := validation(day, 0); err != nil {
+	if err := Validation(day, 0); err != nil {
 		fmt.Println(err.Error())
 		errTmp = err
 	}
-	if err := validation(month, 1); err != nil {
+	if err := Validation(month, 1); err != nil {
 		fmt.Println(err.Error())
 		errTmp = err
 	}
-	if err := validation(year, 2); err != nil {
+	if err := Validation(year, 2); err != nil {
 		fmt.Println(err.Error())
 		errTmp = err
 	}
-	if len(inputs) == 4 {
+	if len(inputs) >= 4 {
 		//input EN/TH
 		language = strings.ToUpper(strings.Trim(inputs[3], "\n"))
 
-		if err := validation(language, 3); err != nil {
+		if err := Validation(language, 3); err != nil {
 			fmt.Println(err.Error())
 			errTmp = err
 		}
@@ -85,27 +117,38 @@ func Find(inputs []string) string {
 	if errTmp != nil {
 		return ""
 	}
+	y, _ := strconv.Atoi(year)
+	m, _ := strconv.Atoi(month)
+	d, _ := strconv.Atoi(day)
 
-	/*
-		if language == "TH" {
-			y, _ := strconv.Atoi(year)
-			year = fmt.Sprint((y - 543))
-		}
-	*/
+	if daysIn(m, y) < d && d > 0 {
+		fmt.Println("error Date doesn't have in calendar")
+		return ""
+	}
 
 	start, _ := time.Parse("02-01-2006", day+"-"+month+"-"+year)
-	diffYear, diffMonth, diffDay, _, _, _ := diff(start, time.Now())
+	diffYear, diffMonth, diffDay, _, _, _ := Diff(start, time.Now())
 	if diffYear < 0 {
-		return "error input year"
+		return "error input is over range"
 	}
 	if language == "TH" {
 		return fmt.Sprint(diffYear) + " ปี  " + fmt.Sprint(diffMonth) + " เดือน  " + fmt.Sprint(diffDay) + " วัน"
 	} else {
-		return fmt.Sprint(diffYear) + " year(s)  " + fmt.Sprint(diffMonth) + " month(s)  " + fmt.Sprint(diffDay) + " day(s)"
+		formatY, formatM, formatD := " year  ", " month  ", " day  "
+		if diffYear > 1 {
+			formatY = " years  "
+		}
+		if diffMonth > 1 {
+			formatM = " months  "
+		}
+		if diffDay > 1 {
+			formatD = " days  "
+		}
+		return fmt.Sprint(diffYear) + formatY + fmt.Sprint(diffMonth) + formatM + fmt.Sprint(diffDay) + formatD
 	}
 }
 
-func diff(a, b time.Time) (year, month, day, hour, min, sec int) {
+func Diff(a, b time.Time) (year, month, day, hour, min, sec int) {
 
 	//location zone time
 	if a.Location() != b.Location() {
@@ -154,4 +197,10 @@ func diff(a, b time.Time) (year, month, day, hour, min, sec int) {
 	}
 
 	return
+}
+
+func daysIn(month int, year int) int {
+	m := time.Month(month)
+	// This is equivalent to time.daysIn(m, year).
+	return time.Date(year, m+1, 0, 0, 0, 0, 0, time.UTC).Day()
 }
