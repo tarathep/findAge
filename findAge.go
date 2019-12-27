@@ -145,7 +145,7 @@ func Find(inputs []string) ([]error, string) {
 		return nil, fmt.Sprint(diffYear) + " ปี  " + fmt.Sprint(diffMonth) + " เดือน  " + fmt.Sprint(diffDay) + " วัน"
 	}
 
-	formatY, formatM, formatD := " year  ", " month  ", " day  "
+	formatY, formatM, formatD := " year  ", " month  ", " day"
 	if diffYear > 1 {
 		formatY = " years  "
 	}
@@ -153,7 +153,7 @@ func Find(inputs []string) ([]error, string) {
 		formatM = " months  "
 	}
 	if diffDay > 1 {
-		formatD = " days  "
+		formatD = " days"
 	}
 	return nil, fmt.Sprint(diffYear) + formatY + fmt.Sprint(diffMonth) + formatM + fmt.Sprint(diffDay) + formatD
 
