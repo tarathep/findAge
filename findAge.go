@@ -104,8 +104,12 @@ func Find(inputs []string) ([]error, string) {
 	}
 	//Default Option Language
 	language := "EN"
-	//Convert option lang to uppercase
-	language = strings.ToUpper(strings.Trim(inputs[3], "\n"))
+
+	//check si
+	if len(inputs) > 3 {
+		//Convert option lang to uppercase
+		language = strings.ToUpper(strings.Trim(inputs[3], "\n"))
+	}
 
 	//break flow when has error not pass in validate
 	if errTmp != nil {
