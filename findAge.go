@@ -33,7 +33,7 @@ func validation(input string, offset int) error {
 		if err != nil {
 			return errors.New("error input convert year format")
 		}
-		if !(iYear > 0) {
+		if iYear <= 0 {
 			return errors.New("error input year format")
 
 		}
@@ -73,8 +73,14 @@ func Find(inputs []string) ([]error, string) {
 
 	//Convert DATE parse to int
 	yearstring := strings.Trim(inputs[2], "\n")
-	yearint, _ := strconv.Atoi(yearstring)
+	yearstring = strings.Trim(yearstring, "\r")
+	yearint, err := strconv.Atoi(yearstring)
+	if err != nil {
+		errs = append(errs, errors.New("error input parsing year"))
+		return errs, ""
+	}
 	year := strconv.Itoa(yearint)
+
 	if len(year) < 2 {
 		year = "000" + year
 	}
