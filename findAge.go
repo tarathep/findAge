@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+type Age struct {
+	TimeNow time.Time
+}
+
 func validation(input string, offset int) error {
 	switch offset {
 	case 0:
@@ -45,7 +49,7 @@ func validation(input string, offset int) error {
 }
 
 //Find is หาอายุว่าเท่าไหร่แล้ว??
-func Find(inputs []string) ([]error, string) {
+func (age Age) Find(inputs []string) ([]error, string) {
 	//collecting err
 	var errs []error = nil
 
@@ -77,7 +81,7 @@ func Find(inputs []string) ([]error, string) {
 	yearint, err := strconv.Atoi(yearstring)
 	if err != nil {
 		errs = append(errs, errors.New("error input parsing year"))
-		return errs, ""
+		//return errs, ""
 	}
 	year := strconv.Itoa(yearint)
 
@@ -132,7 +136,7 @@ func Find(inputs []string) ([]error, string) {
 	}
 
 	start, _ := time.Parse("02-01-2006", day+"-"+month+"-"+year)
-	diffYear, diffMonth, diffDay, _, _, _ := Diff(start, time.Now())
+	diffYear, diffMonth, diffDay, _, _, _ := Diff(start, age.TimeNow)
 
 	//CHECK nagative value year <1
 	if diffYear < 0 {

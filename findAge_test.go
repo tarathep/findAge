@@ -2,74 +2,86 @@ package findAge
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFindDiffTHwith15061996TH(t *testing.T) {
+func TestFindDiffwith15061996TH(t *testing.T) {
 	input := []string{"15", "06", "1996", "TH"}
-	err, output := Find(input)
-	assert.Equal(t, "23 ปี  6 เดือน  12 วัน", output)
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+	err, output := Age{timeMock}.Find(input)
+	assert.Equal(t, "23 ปี  6 เดือน  16 วัน", output)
 	assert.NotEqual(t, nil, err)
 }
 
-/*
-func TestFindDiffEN(t *testing.T) {
+func TestFindDiffwith15061996EN(t *testing.T) {
 	input := []string{"15", "06", "1996", "EN"}
-	if (Find(input)) != "23 year(s)  6 month(s)  9 day(s)" {
-		t.Error()
-	}
+
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+
+	err, output := Age{timeMock}.Find(input)
+	assert.Equal(t, "23 years  6 months  16 days", output)
+	assert.NotEqual(t, nil, err)
 }
 
-/*
-func TestValidationDay(t *testing.T) {
-	if validation("15", 0) != nil {
-		t.Error()
-	}
-}
-func TestValidationMonth(t *testing.T) {
-	if validation("06", 1) != nil {
-		t.Error()
-	}
-}
-func TestValidationYear(t *testing.T) {
-	if validation("1999", 2) != nil {
-		t.Error()
-	}
-}
-func TestValidationLanguage(t *testing.T) {
-	if validation("EN", 3) != nil {
-		t.Error()
-	}
+func TestFindDiffwith15061996Default(t *testing.T) {
+	input := []string{"15", "06", "1996"}
+
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+
+	err, output := Age{timeMock}.Find(input)
+	assert.Equal(t, "23 years  6 months  16 days", output)
+	assert.NotEqual(t, nil, err)
 }
 
-func TestValidationDayERROR(t *testing.T) {
-	if validation("99", 0) == nil {
+func TestFindDiffErrorDaywithx(t *testing.T) {
+	input := []string{"x", "06", "1996", "EN"}
+
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+
+	err, _ := Age{timeMock}.Find(input)
+	if err == nil {
 		t.Error()
 	}
-}
-func TestValidationMonthERROR(t *testing.T) {
-	if validation("-88", 1) == nil {
-		t.Error()
-	}
-}
-func TestValidationYearERROR(t *testing.T) {
-	if validation("xx", 2) == nil {
-		t.Error()
-	}
-}
-func TestValidationLanguageERROR(t *testing.T) {
-	if validation("xyz", 3) == nil {
-		t.Error()
-	}
+	assert.Equal(t, "error input date range format", err[0].Error())
 }
 
-func TestDiff(t *testing.T) {
-	start, _ := time.Parse("02-01-2006", "15-06-2539")
-	now, _ := time.Parse("02-01-2006", "18-08-2540")
-	year, month, day, _, _, _ := diff(start, now)
-	if !(year == 1 && month == 2 && day == 3) {
+func TestFindDiffErrorMonthwithy(t *testing.T) {
+	input := []string{"01", "y", "1996", "EN"}
+
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+
+	err, _ := Age{timeMock}.Find(input)
+	if err == nil {
 		t.Error()
 	}
+	assert.Equal(t, "error input month range format", err[0].Error())
 }
-*/
+
+func TestFindDiffErrorYearwithz(t *testing.T) {
+	input := []string{"01", "06", "z", "EN"}
+
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+
+	err, _ := Age{timeMock}.Find(input)
+	if err == nil {
+		t.Error()
+	}
+	assert.Equal(t, "error input parsing year", err[0].Error())
+}
+
+func TestFindDiffErrorPatternwithAllParser(t *testing.T) {
+	input := []string{"", "", ""}
+
+	timeMock, _ := time.Parse("02-01-2006", "01-01-2020")
+
+	err, _ := Age{timeMock}.Find(input)
+	if err == nil {
+		t.Error()
+	}
+	assert.Equal(t, "error input parsing year", err[0].Error())
+	assert.Equal(t, "error input date range format", err[1].Error())
+	assert.Equal(t, "error input month range format", err[2].Error())
+
+}
